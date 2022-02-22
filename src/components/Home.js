@@ -12,17 +12,39 @@ const Home = () => {
 
   const [currentCards, setCurrentCards] = React.useState();
 
-  const fetchCurrentCards = () => {
+  const fetchCurrentCards = async () => {
     let promises = [];
     _.map(user.cards, (card, index) => {
-      if (index <= 10) {
+      if (index <= 100) {
         promises.push(
           axios.get(`https://api.scryfall.com/cards/arena/${card.grpid}`)
         );
-        if (index === 10) {
-          Promise.all(promises).then((res) => {
-            setCurrentCards(res);
-          });
+        if (index === 100) {
+          Promise.allSettled(promises)
+            .then((res) => {
+              let fetchedCards = [];
+              _.map(res, (o, i) => {
+                if (o.status === "fulfilled") {
+                  const cardData = o.value.data;
+                  console.log(cardData);
+                  if (!cardData.type_line.includes("Land")) {
+                    const matchedCard = _.find(user.cards, {
+                      grpid: cardData.arena_id,
+                    });
+
+                    fetchedCards.push({
+                      ...cardData,
+                      quantity: matchedCard.quantity,
+                    });
+                    if (i === res.length - 1) {
+                      console.log("yo");
+                      setCurrentCards(fetchedCards);
+                    }
+                  }
+                }
+              });
+            })
+            .catch((err) => console.log(err));
         }
       }
     });
@@ -30,10 +52,9 @@ const Home = () => {
 
   const renderCards = () => {
     if (currentCards) {
-      return _.map(currentCards, (c) => {
-        const card = c.data;
+      return _.map(currentCards, (card) => {
         console.log(card);
-        return <Card image={card.image_uris.normal} />;
+        return <Card image={card.image_uris ? card.image_uris.normal : null} />;
       });
     }
   };
@@ -45,10 +66,10 @@ const Home = () => {
   }, [user]);
 
   return (
-    <div className="bg-gray-500 p-5 ">
+    <div className="bg-gray-500 p-24 ">
       <UserMeta />
 
-      <div className="grid-cols-2 xl:grid-cols-4 grid gap-10">
+      <div className="grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 grid gap-8">
         {renderCards()}
       </div>
     </div>

@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { UserContext } from "../context/User";
 
 const UserMeta = () => {
-  const { user } = React.useContext(UserContext);
+  const { meta } = React.useContext(UserContext);
 
-  console.log(user);
   return (
-    <div className="text-left pb-5 font-bold text-5xl text-white ">
-      TightGenes#04617's Collection
+    <div className="text-left pb-5 font-bold text-3xl text-white ">
+      <h2 className="uppercase tracking-widest">{meta.player_name}</h2>
     </div>
   );
 };

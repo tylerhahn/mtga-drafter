@@ -13,13 +13,10 @@ export const CardProvider = ({ children }) => {
       .get(`${prodUrl}/https://mtgajson.untapped.gg/v1/4008.913722/cards.json`)
       .then((res) => {
         setCards(res.data);
-        console.log(res.data);
       });
   };
 
-  React.useEffect(() => {
-    fetchCards();
-  }, []);
+  React.useEffect(() => {}, []);
 
   return (
     <CardContext.Provider
