@@ -1,8 +1,24 @@
-import React from "react";
-import socketio from "socket.io-client";
+import React, { createContext, useState, useEffect } from "react";
+import { io } from "socket.io-client";
 
-export const socket = socketio.connect("http://localhost:8000");
+export const SocketContext = createContext();
 
-console.log(socket);
+export const SocketProvider = ({ children }) => {
+  const [socket, setSocket] = useState(null);
 
-export const SocketContext = React.createContext();
+  useEffect(() => {
+    const newSocket = io(`http://localhost:8000`);
+    setSocket(newSocket);
+    return () => newSocket.close();
+  }, [setSocket]);
+
+  return (
+    <SocketContext.Provider
+      value={{
+        socket,
+      }}
+    >
+      {children}
+    </SocketContext.Provider>
+  );
+};

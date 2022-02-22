@@ -4,12 +4,12 @@ import Home from "./components/Home";
 import { CardProvider } from "./context/Cards";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
-import { SocketContext, socket } from "./context/Socket";
+import { SocketProvider } from "./context/Socket";
 
 function App() {
   return (
     <BrowserRouter>
-      <SocketContext.Provider value={socket}>
+      <SocketProvider>
         <UserProvider>
           <CardProvider>
             <Header />
@@ -18,7 +18,7 @@ function App() {
             </Routes>
           </CardProvider>
         </UserProvider>
-      </SocketContext.Provider>
+      </SocketProvider>
     </BrowserRouter>
   );
 }

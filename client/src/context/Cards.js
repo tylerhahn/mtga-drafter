@@ -5,23 +5,12 @@ export const CardContext = createContext();
 
 export const CardProvider = ({ children }) => {
   const [cards, setCards] = React.useState([]);
-  const devUrl = "http://localhost:3000";
-  const prodUrl = "https://mtga-anywhere.herokuapp.com";
-
-  const fetchCards = () => {
-    axios
-      .get(`${prodUrl}/https://mtgajson.untapped.gg/v1/4008.913722/cards.json`)
-      .then((res) => {
-        setCards(res.data);
-      });
-  };
-
-  React.useEffect(() => {}, []);
 
   return (
     <CardContext.Provider
       value={{
         cards,
+        setCards,
       }}
     >
       {children}

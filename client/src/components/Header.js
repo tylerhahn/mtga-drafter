@@ -10,16 +10,20 @@ const Header = () => {
 
   React.useEffect(() => {
     if (user && user.user_id) {
-      console.log(user);
-
       setCredentials({ userId: user.user_id, playerId: user.player_id });
       setShowLogin(false);
     }
   }, [user]);
 
+  React.useEffect(() => {
+    if (socket.connected) {
+      console.log("yo");
+    }
+  }, [socket]);
+
   return (
     <div className="bg-gray-500">
-      <div className="flex py-3 px-5">
+      <div className="flex py-3 px-5 items-center">
         <div className="flex items-center">
           <button
             onClick={() => setShowLogin(!showLogin)}
@@ -57,6 +61,9 @@ const Header = () => {
               {user && user.name ? user.name : "Save"}
             </button>
           </div>
+        )}
+        {socket && socket.connected && (
+          <h3 className="text-gray-100 ml-4">Connected: {socket.id} </h3>
         )}
       </div>
     </div>

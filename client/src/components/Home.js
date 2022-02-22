@@ -72,7 +72,7 @@ const Home = () => {
     <div className="bg-gray-500 p-24 min-h-screen">
       <Lobby />
       <div className="grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 grid gap-8">
-        {renderCards()}
+        {/* {renderCards()} */}
       </div>
     </div>
   );

@@ -3,15 +3,91 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server);
 
-// app.get("/", (req, res) => {
-//   res.sendFile(__dirname + "/index.html");
-// });
+const { addUser, removeUser, getUser, getUsersInRoom } = require("../users");
+
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
+  socket.on("join", (res) => {
+    const roomId = res.roomId;
+    const { error, user } = addUser({
+      id: socket.id,
+      userObj: res.user,
+      roomId,
+    }); // add user with socket id and room info
+    console.log("joined");
+    if (error) {
+      console.log(error);
+    }
+
+    socket.join(user.room);
+
+    socket.emit("message", {
+      user: "adminX",
+      text: `${user.data.player_name.toUpperCase()}, Welcome to ${
+        user.room
+      } room.`,
+    });
+    socket.broadcast.to(user.room).emit("message", {
+      user: "adminX",
+      text: `${user.data.player_name.toUpperCase()} has joined!`,
+    });
+
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersInRoom(user.room), // get user data based on user's room
+    });
+  });
+
+  socket.on("sendMessage", (message, callback) => {
+    const user = getUser(socket.id);
+
+    io.to(user.room).emit("message", { user: user.player_name, text: message });
+
+    callback();
+  });
+
+  socket.on("disconnect", () => {
+    const user = removeUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit("message", {
+        user: "adminX",
+        text: `${user.player_name.toUpperCase()} has left.`,
+      });
+      io.to(user.room).emit("roomData", {
+        room: user.room,
+        users: getUsersInRoom(user.room),
+      });
+    }
+  });
 });
+
+////
+
+// io.on("connection", (socket) => {
+//   console.log(socket.id);
+
+//   socket.on("create", (room) => {
+//     socket.join(room);
+
+//     //this is an ES6 Set of all client ids in the room
+//     const clients = io.sockets.adapter.rooms.get(room);
+//     const numClients = clients ? clients.size : 0;
+
+//     io.to(room).emit("new event", numClients);
+
+//     for (const clientId of clients) {
+//       //this is the socket of each client in the room.
+//       const clientSocket = io.sockets.sockets.get(clientId);
+//     }
+//   });
+// });
 
 server.listen(8000, () => {
   console.log("listening on *:8000");
