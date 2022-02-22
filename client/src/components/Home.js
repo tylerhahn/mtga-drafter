@@ -5,6 +5,8 @@ import { CardContext } from "../context/Cards";
 import { UserContext } from "../context/User";
 import Card from "./Card";
 import UserMeta from "./UserMeta";
+import FadeIn from "./Anime/FadeIn";
+import Lobby from "./Lobby";
 
 const Home = () => {
   const { user } = React.useContext(UserContext);
@@ -26,7 +28,6 @@ const Home = () => {
               _.map(res, (o, i) => {
                 if (o.status === "fulfilled") {
                   const cardData = o.value.data;
-                  console.log(cardData);
                   if (!cardData.type_line.includes("Land")) {
                     const matchedCard = _.find(user.cards, {
                       grpid: cardData.arena_id,
@@ -37,7 +38,6 @@ const Home = () => {
                       quantity: matchedCard.quantity,
                     });
                     if (i === res.length - 1) {
-                      console.log("yo");
                       setCurrentCards(fetchedCards);
                     }
                   }
@@ -52,9 +52,12 @@ const Home = () => {
 
   const renderCards = () => {
     if (currentCards) {
-      return _.map(currentCards, (card) => {
-        console.log(card);
-        return <Card image={card.image_uris ? card.image_uris.normal : null} />;
+      return _.map(currentCards, (card, index) => {
+        return (
+          <FadeIn duration={500} delay={250}>
+            <Card image={card.image_uris ? card.image_uris.normal : null} />
+          </FadeIn>
+        );
       });
     }
   };
@@ -66,9 +69,8 @@ const Home = () => {
   }, [user]);
 
   return (
-    <div className="bg-gray-500 p-24 ">
-      <UserMeta />
-
+    <div className="bg-gray-500 p-24 min-h-screen">
+      <Lobby />
       <div className="grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 grid gap-8">
         {renderCards()}
       </div>
