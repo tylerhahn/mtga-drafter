@@ -1,11 +1,25 @@
 import axios from "axios";
-import React, { createContext } from "react";
+import React, { createContext, useContext } from "react";
+import { SocketContext } from "./Socket";
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = React.useState();
+  const [socketUser, setSocketUser] = React.useState();
   const [meta, setMeta] = React.useState([]);
+
+  const { socket } = useContext(SocketContext);
+
+  React.useEffect(() => {
+    if (socket) {
+      socket.on("userData", (res) => {
+        setSocketUser(res);
+      });
+    }
+  }, [socket]);
+
+  console.log(socketUser);
 
   const saveCredentials = (userId, playerId) => {
     if (userId && playerId) {
@@ -52,6 +66,7 @@ export const UserProvider = ({ children }) => {
   return (
     <UserContext.Provider
       value={{
+        socketUser,
         user,
         saveCredentials,
         meta,

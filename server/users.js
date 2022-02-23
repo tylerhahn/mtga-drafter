@@ -1,7 +1,11 @@
 const _ = require("lodash");
 const axios = require("axios");
+const { cardDb } = require("./scryfall.js");
+const { result } = require("lodash");
+const e = require("express");
 //Array of users
 const users = [];
+const boosters = [];
 
 const addUser = (res) => {
   if (res && !res.userObj) return { error: "No user data found" };
@@ -12,10 +16,20 @@ const addUser = (res) => {
     (user) => user.room === room && user.data.player_name === userName
   );
 
+  const determineHost = _.find(users, { host: true });
+
   //   if (!userName || !room) return { error: "Username and room are required." };
   if (existingUser) return { error: "Username already exists." };
 
-  const user = { id: res.id, room: res.roomId, data: res.userObj };
+  const user = {
+    host: determineHost ? false : true,
+    id: res.id,
+    round: 1,
+    pick: 15,
+    room: res.roomId,
+    data: res.userObj,
+    draftedCards: [],
+  };
 
   users.push(user);
 
@@ -51,45 +65,87 @@ const constructCardPool = (room) => {
   return sharedCollection;
 };
 
-const getPacks = (room) => {
-  const rawCardPool = constructCardPool(room);
+const draftCard = (cardId, user, room) => {};
+
+const getBooster = (user, pick, round, room) => {
+  const findBooster = _.filter(boosters, (x) => {
+    return (
+      x.pack.length === pick && x.round === round && !x.user && x.room === room
+    );
+  });
+  findBooster[0].user = user.id;
+  return findBooster[0];
+};
+
+const getPacks = async (room) => {
   let cardPool = [];
 
-  let promises = [];
+  try {
+    const rawCardPool = constructCardPool(room);
+    try {
+      _.map(rawCardPool, (card, index) => {
+        const scryfallCard = _.find(cardDb, { arena_id: card.grpid });
+        if (scryfallCard) {
+          cardPool.push(scryfallCard);
+        }
+      });
 
-  if (rawCardPool) {
-    _.map(rawCardPool, (card, index) => {
-      promises.push(
-        axios.get(`https://api.scryfall.com/cards/arena/${card.grpid}`)
-      );
+      try {
+        const players = getUsersInRoom(room).length;
 
-      if (index === cardPool.length - 1) {
-        Promise.allSettled(promises).then((res) => {
-          _.map(res, (o, i) => {
-            const cardData = o.value.data;
-            if (!cardData.type_line.includes("Land")) {
-              cardPool.push(...cardData);
-              if (i === res.length - 1) {
-                console.log(cardPool.length);
-              }
-            }
-          });
-        });
+        for (let index = 0; index < players; index++) {
+          let roundPacks = [];
+
+          for (let index = 0; index < 3; index++) {
+            boosters.push({
+              round: index + 1,
+              room: room,
+              packId: index,
+              pack: generatePack(cardPool),
+            });
+          }
+        }
+
+        return boosters;
+      } catch (err) {
+        console.log(err);
       }
-    });
+    } catch (err) {
+      console.log(err);
+    }
+  } catch (err) {
+    console.log(err);
   }
-
-  // const rares = _.filter(cardPool, { rarity: "common" });
-  // console.log(cardPool[1]);
-
-  // const shuffled = cardPool.sort(() => 0.5 - Math.random());
-  // let selected = shuffled.slice(0, 15);
-
-  // console.log(selected.length);
 };
+
+function pullRandomCards(cards, amount) {
+  const shuffled = cards.sort(() => 0.5 - Math.random());
+  let selected = shuffled.slice(0, amount);
+
+  return selected;
+}
+
+function generatePack(cards) {
+  const rares = _.filter(cards, (x) => {
+    return x.rarity === "rare" || x.rarity === "mythic";
+  });
+
+  const uncommons = _.filter(cards, { rarity: "uncommon" });
+
+  const commons = _.filter(cards, { rarity: "common" });
+
+  const packRares = pullRandomCards(rares, 1);
+  const packUncommons = pullRandomCards(uncommons, 3);
+  const packCommons = pullRandomCards(commons, 11);
+
+  const pack = [...packRares, ...packUncommons, ...packCommons];
+
+  return pack;
+}
 
 module.exports = {
   addUser,
+  getBooster,
   removeUser,
   getUser,
   getUsersInRoom,

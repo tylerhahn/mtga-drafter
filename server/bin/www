@@ -3,13 +3,14 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+const _ = require("lodash");
 
 const {
   addUser,
   removeUser,
   getUser,
   getUsersInRoom,
-  constructCardPool,
+  getBooster,
   getPacks,
 } = require("../users");
 
@@ -20,12 +21,34 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("startDraft", (res) => {
-    const roomId = res.roomId;
+  socket.on("getPack", ({ id, user, pick, round, room }) => {});
 
-    io.to(roomId).emit("getPacks", {
-      cards: getPacks(roomId),
+  socket.on("startDraft", async (res) => {
+    const roomId = res.roomId;
+    const players = getUsersInRoom(roomId);
+
+    const packs = await getPacks(roomId);
+
+    _.map(players, (player) => {
+      const { id, pick, room, round } = player;
+      io.to(id).emit("receivePack", {
+        data: getBooster(player, pick, round, room),
+      });
     });
+
+    io.to(roomId).emit("roomData", {
+      draftActive: true,
+      round: 1,
+      pick: 1,
+      room: roomId,
+      users: getUsersInRoom(roomId),
+    });
+
+    // console.log(packs);
+
+    // io.to(roomId).emit("getPacks", {
+    //   packs: packs,
+    // });
   });
 
   socket.on("join", (res) => {
@@ -42,20 +65,15 @@ io.on("connection", (socket) => {
 
     socket.join(user.room);
 
-    // socket.emit("message", {
-    //   user: "adminX",
-    //   text: `${user.data.player_name.toUpperCase()}, Welcome to ${
-    //     user.room
-    //   } room.`,
-    // });
-    socket.broadcast.to(user.room).emit("message", {
-      user: "adminX",
-      text: `${user.data.player_name.toUpperCase()} has joined!`,
-    });
-
     io.to(user.room).emit("roomData", {
+      draftActive: false,
       room: user.room,
       users: getUsersInRoom(user.room),
+    });
+
+    io.to(user.id).emit("userData", {
+      room: user.room,
+      user: user,
     });
   });
 

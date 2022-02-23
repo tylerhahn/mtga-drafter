@@ -1,14 +1,26 @@
 import React, { useState } from "react";
+import axios from "axios";
 
-const Card = ({ name, image, qty }) => {
+const Card = ({ name, image, qty, id, active, selectCard }) => {
+  const [scryfallImage, setScryfallImage] = useState();
+
+  // React.useEffect(() => {
+  //   if (!image) {
+  //     axios.get(`https://api.scryfall.com/cards/arena/${id}`).then((res) => {
+  //       setScryfallImage(res.data.image_uris.png);
+  //     });
+  //   }
+  // }, []);
+
   return (
-    <div className="relative">
-      {qty > 0 && (
-        <div className="shadow-md bottom-0 right-0 drop-shadow-sm absolute bg-gray-200 text-gray-100 font-bold w-12 h-12  z-10 flex items-center justify-center">
-          {qty}
-        </div>
-      )}
-      <img className=" shadow-xl w-full" src={image} alt={name} />
+    <div className="cursor-pointer relative" onClick={() => selectCard()}>
+      <img
+        className={`shadow-xl w-full ${
+          active ? "border-3 border-green-500" : ""
+        }`}
+        src={image || scryfallImage}
+        alt={name}
+      />
     </div>
   );
 };

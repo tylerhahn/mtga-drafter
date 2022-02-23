@@ -1,12 +1,14 @@
 import React, { useContext, useState } from "react";
+import { RoomContext } from "../context/Room";
 import { SocketContext } from "../context/Socket";
 import { UserContext } from "../context/User";
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(true);
   const [credentials, setCredentials] = useState({});
-  const { user, saveCredentials } = useContext(UserContext);
+  const { user, saveCredentials, socketUser } = useContext(UserContext);
   const { socket } = useContext(SocketContext);
+  const { room } = useContext(RoomContext);
 
   React.useEffect(() => {
     if (user && user.user_id) {
@@ -18,7 +20,6 @@ const Header = () => {
   const startDraft = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get("roomId");
-    console.log(socket);
     socket.emit("startDraft", { roomId: roomId });
   };
 
@@ -63,12 +64,14 @@ const Header = () => {
             </button>
           </div>
         )}
-        <button
-          onClick={() => startDraft()}
-          class="rounded px-3 py-2 m-1 border-b-4 border-l-2 shadow-lg bg-green-500 border-blue-900 text-white"
-        >
-          Start Draft
-        </button>
+        {socketUser && socketUser.user.host && !room.draftActive && (
+          <button
+            onClick={() => startDraft()}
+            class="rounded px-3 py-2 m-1 border-b-4 border-l-2 shadow-lg bg-green-500 border-blue-900 text-white"
+          >
+            Start Draft
+          </button>
+        )}
       </div>
     </div>
   );

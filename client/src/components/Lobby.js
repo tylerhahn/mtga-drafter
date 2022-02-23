@@ -8,6 +8,7 @@ const Lobby = () => {
   const { socket } = useContext(SocketContext);
   const [roomId, setRoomId] = useState();
   const [lobby, setLobby] = useState([]);
+  const [boosters, setBoosters] = useState([]);
 
   const { user } = useContext(UserContext);
 
@@ -22,21 +23,19 @@ const Lobby = () => {
     }
   }, [user, socket]);
 
-  React.useEffect(() => {
-    if (socket) {
-      socket.on("roomData", (res) => {
-        setLobby(res);
-      });
-    }
-  }, [socket]);
+  console.log(lobby);
+
+  React.useEffect(() => {}, [socket]);
   const renderConnectedUsers = () => {
     return _.map(lobby.users, (user, index) => {
-      return (
-        <UserPortrait
-          portraitId={user.data.cards[index].grpid}
-          name={user.data.player_name}
-        />
-      );
+      if (user && user.data.cards) {
+        return (
+          <UserPortrait
+            portraitId={user.data.cards[index].grpid}
+            name={user.data.player_name}
+          />
+        );
+      }
     });
   };
 
