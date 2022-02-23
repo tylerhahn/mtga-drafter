@@ -6,7 +6,7 @@ const Header = () => {
   const [showLogin, setShowLogin] = useState(true);
   const [credentials, setCredentials] = useState({});
   const { user, saveCredentials } = useContext(UserContext);
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
 
   React.useEffect(() => {
     if (user && user.user_id) {
@@ -15,15 +15,16 @@ const Header = () => {
     }
   }, [user]);
 
-  React.useEffect(() => {
-    if (socket.connected) {
-      console.log("yo");
-    }
-  }, [socket]);
+  const startDraft = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = urlParams.get("roomId");
+    console.log(socket);
+    socket.emit("startDraft", { roomId: roomId });
+  };
 
   return (
-    <div className="bg-gray-500">
-      <div className="flex py-3 px-5 items-center">
+    <div>
+      <div className="flex mb-5 items-center">
         <div className="flex items-center">
           <button
             onClick={() => setShowLogin(!showLogin)}
@@ -62,9 +63,12 @@ const Header = () => {
             </button>
           </div>
         )}
-        {socket && socket.connected && (
-          <h3 className="text-gray-100 ml-4">Connected: {socket.id} </h3>
-        )}
+        <button
+          onClick={() => startDraft()}
+          class="rounded px-3 py-2 m-1 border-b-4 border-l-2 shadow-lg bg-green-500 border-blue-900 text-white"
+        >
+          Start Draft
+        </button>
       </div>
     </div>
   );

@@ -23,7 +23,6 @@ export const UserProvider = ({ children }) => {
       const parsedCrendentials = JSON.parse(localCredentials);
 
       if (parsedCrendentials.playerId && parsedCrendentials.userId) {
-        console.log(parsedCrendentials);
         axios
           .get(
             `${prodUrl}/https://api.mtga.untapped.gg/api/v1/account/collections/${parsedCrendentials.playerId}?user_id=${parsedCrendentials.userId}`

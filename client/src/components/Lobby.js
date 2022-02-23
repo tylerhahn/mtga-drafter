@@ -1,10 +1,13 @@
+import _ from "lodash";
 import React, { useContext, useState } from "react";
 import { SocketContext } from "../context/Socket";
 import { UserContext } from "../context/User";
+import UserPortrait from "./UserPortrait";
 
 const Lobby = () => {
   const { socket } = useContext(SocketContext);
   const [roomId, setRoomId] = useState();
+  const [lobby, setLobby] = useState([]);
 
   const { user } = useContext(UserContext);
 
@@ -13,7 +16,6 @@ const Lobby = () => {
     const roomId = urlParams.get("roomId");
     if (socket) {
       if (roomId && user) {
-        console.log(user);
         setRoomId(roomId);
         socket.emit("join", { user: user, roomId: roomId });
       }
@@ -22,17 +24,27 @@ const Lobby = () => {
 
   React.useEffect(() => {
     if (socket) {
-      socket.on("message", (res) => {
-        console.log(res);
-      });
-
       socket.on("roomData", (res) => {
-        console.log(res);
+        setLobby(res);
       });
     }
   }, [socket]);
+  const renderConnectedUsers = () => {
+    return _.map(lobby.users, (user, index) => {
+      return (
+        <UserPortrait
+          portraitId={user.data.cards[index].grpid}
+          name={user.data.player_name}
+        />
+      );
+    });
+  };
 
-  return <div className="">{roomId ? roomId : null}</div>;
+  return (
+    <div className="p-3 relative">
+      <div className="">{renderConnectedUsers()}</div>
+    </div>
+  );
 };
 
 export default Lobby;

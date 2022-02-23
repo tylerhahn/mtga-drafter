@@ -12,7 +12,6 @@ function App() {
       <SocketProvider>
         <UserProvider>
           <CardProvider>
-            <Header />
             <Routes>
               <Route exact path="/" element={<Home />} />
             </Routes>

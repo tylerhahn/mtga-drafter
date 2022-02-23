@@ -7,6 +7,7 @@ import Card from "./Card";
 import UserMeta from "./UserMeta";
 import FadeIn from "./Anime/FadeIn";
 import Lobby from "./Lobby";
+import Header from "./Header";
 
 const Home = () => {
   const { user } = React.useContext(UserContext);
@@ -55,7 +56,7 @@ const Home = () => {
       return _.map(currentCards, (card, index) => {
         return (
           <FadeIn duration={500} delay={250}>
-            <Card image={card.image_uris ? card.image_uris.normal : null} />
+            <Card image={card.image_uris ? card.image_uris.png : null} />
           </FadeIn>
         );
       });
@@ -69,10 +70,18 @@ const Home = () => {
   }, [user]);
 
   return (
-    <div className="bg-gray-500 p-24 min-h-screen">
-      <Lobby />
-      <div className="grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 grid gap-8">
-        {/* {renderCards()} */}
+    <div className="bg-gray-500 min-h-screen">
+      <div className="flex">
+        <div className="bg-gray-400 ">
+          <Lobby />
+        </div>
+
+        <div className="py-3 px-5">
+          <Header />
+          <div className="grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 grid gap-8">
+            {renderCards()}
+          </div>
+        </div>
       </div>
     </div>
   );
