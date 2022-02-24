@@ -12,6 +12,7 @@ const {
   getUsersInRoom,
   getBooster,
   getPacks,
+  draftCard,
 } = require("../users");
 
 const io = require("socket.io")(server, {
@@ -21,7 +22,13 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("getPack", ({ id, user, pick, round, room }) => {});
+  socket.on("draftCard", async ({ id, card, packId, passToId, round }) => {
+    const passedBooster = await draftCard(id, card, packId, round);
+    console.log(round);
+    io.to(passToId).emit("receivePack", {
+      data: passedBooster,
+    });
+  });
 
   socket.on("startDraft", async (res) => {
     const roomId = res.roomId;

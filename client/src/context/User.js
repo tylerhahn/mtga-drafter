@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { SocketContext } from "./Socket";
 
 export const UserContext = createContext();
@@ -8,8 +8,16 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = React.useState();
   const [socketUser, setSocketUser] = React.useState();
   const [meta, setMeta] = React.useState([]);
+  const [selectedCards, setSelectedCards] = useState([]);
+  const [draftedCard, setDraftedCard] = useState();
+
+  console.log(selectedCards);
 
   const { socket } = useContext(SocketContext);
+  const updateDraftedCards = (card) => {
+    setSelectedCards([...selectedCards, draftedCard]);
+    setDraftedCard(null);
+  };
 
   React.useEffect(() => {
     if (socket) {
@@ -18,8 +26,6 @@ export const UserProvider = ({ children }) => {
       });
     }
   }, [socket]);
-
-  console.log(socketUser);
 
   const saveCredentials = (userId, playerId) => {
     if (userId && playerId) {
@@ -69,6 +75,11 @@ export const UserProvider = ({ children }) => {
         socketUser,
         user,
         saveCredentials,
+        setSelectedCards,
+        setDraftedCard,
+        draftedCard,
+        selectedCards,
+        updateDraftedCards,
         meta,
       }}
     >

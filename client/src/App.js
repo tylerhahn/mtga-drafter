@@ -1,7 +1,7 @@
 import "./App.css";
 import { UserProvider } from "./context/User";
 import Home from "./components/Home";
-import { CardProvider } from "./context/Cards";
+import { GameProvider } from "./context/Game";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import { SocketProvider } from "./context/Socket";
@@ -13,11 +13,11 @@ function App() {
       <SocketProvider>
         <RoomProvider>
           <UserProvider>
-            <CardProvider>
+            <GameProvider>
               <Routes>
                 <Route exact path="/" element={<Home />} />
               </Routes>
-            </CardProvider>
+            </GameProvider>
           </UserProvider>
         </RoomProvider>
       </SocketProvider>

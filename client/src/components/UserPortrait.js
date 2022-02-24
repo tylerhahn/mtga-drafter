@@ -12,7 +12,7 @@ const UserPortrait = ({ name, active, portraitId }) => {
       });
   }, [portraitId]);
   return (
-    <div className="text-center py-2">
+    <div className="text-center mr-4">
       <img
         className={`m-auto rounded-full w-12 h-12 border-2 ${
           active ? "border-red" : "border-green-500"

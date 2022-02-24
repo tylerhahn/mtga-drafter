@@ -38,7 +38,6 @@ const addUser = (res) => {
 
 const removeUser = (id) => {
   const index = users.findIndex((user) => user.id === id);
-
   if (index !== -1) return users.splice(index, 1)[0];
 };
 
@@ -65,7 +64,26 @@ const constructCardPool = (room) => {
   return sharedCollection;
 };
 
-const draftCard = (cardId, user, room) => {};
+const draftCard = (id, card, packId, round) => {
+  console.log(round);
+  const roomUsers = [...users];
+  const draftUser = _.findIndex(users, { id: id });
+
+  //add card to users' drafted cards
+  const draftedCards = [...roomUsers[draftUser].draftedCards, card];
+  roomUsers[draftUser].draftedCards = draftedCards;
+
+  //remove card from booster
+  const boosterIndex = _.findIndex(boosters, { packId: packId, round: round });
+
+  const boosterPack = [...boosters[boosterIndex].pack];
+
+  const cardIndex = _.findIndex(boosterPack, { arena_id: card.arena_id });
+  boosterPack.splice(cardIndex, 1);
+  boosters[boosterIndex].pack = boosterPack;
+
+  return boosters[boosterIndex];
+};
 
 const getBooster = (user, pick, round, room) => {
   const findBooster = _.filter(boosters, (x) => {
@@ -96,9 +114,9 @@ const getPacks = async (room) => {
         for (let index = 0; index < players; index++) {
           let roundPacks = [];
 
-          for (let index = 0; index < 3; index++) {
+          for (let i = 0; i < 3; i++) {
             boosters.push({
-              round: index + 1,
+              round: i + 1,
               room: room,
               packId: index,
               pack: generatePack(cardPool),
@@ -151,4 +169,5 @@ module.exports = {
   getUsersInRoom,
   constructCardPool,
   getPacks,
+  draftCard,
 };

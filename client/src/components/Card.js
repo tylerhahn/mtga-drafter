@@ -1,26 +1,63 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useContext, useState } from "react";
+import { UserContext } from "../context/User";
+import { returnCardUri } from "../utils";
 
-const Card = ({ name, image, qty, id, active, selectCard }) => {
-  const [scryfallImage, setScryfallImage] = useState();
+const Card = ({ card }) => {
+  const { draftedCard, setDraftedCard } = useContext(UserContext);
 
-  // React.useEffect(() => {
-  //   if (!image) {
-  //     axios.get(`https://api.scryfall.com/cards/arena/${id}`).then((res) => {
-  //       setScryfallImage(res.data.image_uris.png);
-  //     });
-  //   }
-  // }, []);
+  const renderCard = () => {
+    if (card && card.card_faces) {
+      return (
+        <div className="mtg-card card-glow">
+          <div className="side">
+            <img
+              className={` rounded-xl shadow-xl w-full ${
+                draftedCard && draftedCard.arena_id === card.arena_id
+                  ? "active-card"
+                  : ""
+              }`}
+              src={returnCardUri(card, "front")}
+              alt={card.name}
+            />
+          </div>
+          <div className="side back">
+            <img
+              className={`  rounded-xl shadow-xl w-full ${
+                draftedCard && draftedCard.arena_id === card.arena_id
+                  ? "active-card"
+                  : ""
+              }`}
+              src={returnCardUri(card, "back")}
+              alt={card.name}
+            />
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="mtg-cardz">
+          <div className="side">
+            <img
+              className={`card-glow rounded-xl shadow-xl w-full ${
+                draftedCard && draftedCard.arena_id === card.arena_id
+                  ? "active-card"
+                  : ""
+              }`}
+              src={returnCardUri(card)}
+              alt={card.name}
+            />
+          </div>
+        </div>
+      );
+    }
+  };
 
   return (
-    <div className="cursor-pointer relative" onClick={() => selectCard()}>
-      <img
-        className={`shadow-xl w-full ${
-          active ? "border-3 border-green-500" : ""
-        }`}
-        src={image || scryfallImage}
-        alt={name}
-      />
+    <div
+      className="cursor-pointer relative "
+      onClick={() => setDraftedCard(card)}
+    >
+      {renderCard()}
     </div>
   );
 };
