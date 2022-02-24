@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Poppins", sans-serif;
+  }
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.card-glow {
+  transition: 0.2s ease-in-out;
+}
+
+.card-glow:hover,
+.active-card {
+  box-shadow: 1px 1px 20px 1px #0eb69f;
+}
+
+.mtg-card {
+  transform-style: preserve-3d;
+  transition: all 500ms ease-in-out;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.card-container {
+  position: relative;
+}
+
+.mtg-card:hover {
+  transform: rotateY(180deg);
+}
+
+.mtg-card .side {
+  backface-visibility: hidden;
+  border-radius: 6px;
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.mtg-card .back {
+  top: 0;
+  z-index: 1;
+  position: absolute;
+  transform: rotateY(180deg);
+}
+
+.card-hover-preview {
+  position: absolute;
+  left: -15em;
+  top: -5em;
+  z-index: 99;
+}
+.card-parent > .card-hover-preview {
+  visibility: hidden;
+}
+
+.card-parent:hover > .card-hover-preview {
+  visibility: visible;
+}
+
+.card-hover-preview img {
+  width: 250px;
+}
