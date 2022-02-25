@@ -24,13 +24,27 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("draftCard", async ({ id, card, packId, passToId, round }) => {
-    const passedBooster = await draftCard(id, card, packId, round);
-    console.log(round);
-    io.to(passToId).emit("receivePack", {
-      data: passedBooster,
-    });
-  });
+  socket.on(
+    "draftCard",
+    async ({ id, card, packId, passToId, round, freshPack }) => {
+      if (round < 4) {
+        const passedBooster = await draftCard(
+          id,
+          card,
+          packId,
+          round,
+          freshPack
+        );
+        io.to(passToId).emit("receivePack", {
+          data: passedBooster,
+        });
+      } else {
+        io.to(id).emit("drafterOver", {
+          finished: true,
+        });
+      }
+    }
+  );
 
   socket.on("startDraft", async (res) => {
     const roomId = res.roomId;
@@ -70,6 +84,7 @@ io.on("connection", (socket) => {
     console.log("joined");
     if (error) {
       console.log(error);
+      return;
     }
 
     socket.join(user.room);
@@ -94,14 +109,10 @@ io.on("connection", (socket) => {
     callback();
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", (room) => {
     const user = removeUser(socket.id);
 
     if (user) {
-      // io.to(user.room).emit("message", {
-      //   user: "adminX",
-      //   text: `${user.player_name.toUpperCase()} has left.`,
-      // });
       io.to(user.room).emit("roomData", {
         room: user.room,
         users: getUsersInRoom(user.room),

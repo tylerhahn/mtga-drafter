@@ -12,6 +12,7 @@ export const RoomProvider = ({ children }) => {
   useEffect(() => {
     if (socket) {
       socket.on("roomData", (res) => {
+        console.log(res);
         setRoom(res);
         if (res.round === 1 || res.round === 3) {
           setPassDirection("r");
@@ -26,6 +27,7 @@ export const RoomProvider = ({ children }) => {
     <RoomContext.Provider
       value={{
         room,
+        setRoom,
         passDirection,
       }}
     >

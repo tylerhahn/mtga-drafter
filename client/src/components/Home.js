@@ -28,11 +28,14 @@ const Home = () => {
     <div className="p-5 bg-gray-500 min-h-screen">
       <Header />
       <RoundInfo packId={packs.length > 0 ? packs[0].packId : false} />
-      <div className="flex items-start">
-        <div className="w-2/3 grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 grid gap-2 xl:gap-4 2xl:gap-8">
+      <div className="flex items-start justify-between">
+        <div className="w-8/12 grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 grid gap-2 xl:gap-4 2xl:gap-8">
           {renderCards()}
         </div>
-        <div className="w-1/3">
+        <div
+          style={{ maxWidth: 275 }}
+          className="rounded-lg w-3/12 p-2 min-h-screen bg-gray-400"
+        >
           <DraftedCards />
         </div>
       </div>

@@ -10,7 +10,7 @@ const Header = () => {
   const [credentials, setCredentials] = useState({});
   const { user, saveCredentials, socketUser } = useContext(UserContext);
   const { socket } = useContext(SocketContext);
-  const { room } = useContext(RoomContext);
+  const { room, setRoom } = useContext(RoomContext);
   const [roomId, setRoomId] = useState();
 
   React.useEffect(() => {
@@ -53,6 +53,11 @@ const Header = () => {
     }
   };
 
+  const leaveRoom = () => {
+    socket.disconnect();
+    setRoom();
+  };
+
   return (
     <div className="flex w-11/12 m-auto items-center justify-between">
       <div>
@@ -60,6 +65,15 @@ const Header = () => {
       </div>
       <div>
         <div className="flex items-center">
+          {user && room && (
+            <button
+              onClick={() => leaveRoom()}
+              className="rounded px-3 py-2 border-1  shadow-lg border-red-900 mr-3 text-white"
+            >
+              Leave Room
+            </button>
+          )}
+
           <button
             onClick={() => setShowLogin(!showLogin)}
             className="rounded px-3 py-2 border-b-4 border-l-2 shadow-lg bg-green-500 border-blue-900 text-white"
