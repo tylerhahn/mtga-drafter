@@ -7,7 +7,7 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io(`http://localhost:8000`);
+    const newSocket = io(`https://mtga-drafter-utdal.ondigitalocean.app/`);
     setSocket(newSocket);
     return () => newSocket.close();
   }, [setSocket]);
