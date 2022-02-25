@@ -22,6 +22,12 @@ const io = require("socket.io")(server, {
   },
 });
 
+emit.on("uncaughtException", function (exception) {
+  console.log(exception); // to see your exception details in the console
+  // if you are on production, maybe you can send the exception details to your
+  // email as well ?
+});
+
 io.on("connection", (socket) => {
   socket.on(
     "draftCard",
@@ -144,6 +150,6 @@ io.on("connection", (socket) => {
 //   });
 // });
 
-server.listen(8000, () => {
+server.listen(7111, () => {
   console.log("listening on *:8000");
 });
