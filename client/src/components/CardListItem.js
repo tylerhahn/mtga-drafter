@@ -23,11 +23,15 @@ const CardListItem = ({ card }) => {
   const renderMana = () => {};
   return (
     <div
-      //   style={{ backgroundColor: findColors(card.color_identity) }}
-      className={`card-parent relative cursor-pointer bg-gray-200 text-white w-full py-1 px-3 m-1 rounded-full font-bold`}
+      style={{
+        height: 35,
+        backgroundSize: "cover",
+        backgroundImage: "url(" + returnCardUri(card) + ")",
+      }}
+      className={`card-parent relative cursor-pointer  text-white w-full py-1 px-3 mb-2 rounded-full font-bold`}
     >
       <div className="flex justify-between">
-        <div>{card.name}</div>
+        {/* <div>{card.name}</div> */}
         <div>{renderMana()}</div>
       </div>
       <div className="card-hover-preview">

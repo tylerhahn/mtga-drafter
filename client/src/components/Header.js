@@ -54,7 +54,7 @@ const Header = () => {
   };
 
   return (
-    <div className="flex w-11/12 m-auto items-center justify-between">
+    <div className="flex m-auto items-center justify-between">
       <div>
         <div className="flex flex-wrap ">{renderConnectedUsers()}</div>
       </div>

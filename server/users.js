@@ -64,8 +64,7 @@ const constructCardPool = (room) => {
   return sharedCollection;
 };
 
-const draftCard = (id, card, packId, round) => {
-  console.log(round);
+const draftCard = (id, card, packId, round, freshPack) => {
   const roomUsers = [...users];
   const draftUser = _.findIndex(users, { id: id });
 
@@ -73,14 +72,15 @@ const draftCard = (id, card, packId, round) => {
   const draftedCards = [...roomUsers[draftUser].draftedCards, card];
   roomUsers[draftUser].draftedCards = draftedCards;
 
-  //remove card from booster
   const boosterIndex = _.findIndex(boosters, { packId: packId, round: round });
-
-  const boosterPack = [...boosters[boosterIndex].pack];
-
-  const cardIndex = _.findIndex(boosterPack, { arena_id: card.arena_id });
-  boosterPack.splice(cardIndex, 1);
-  boosters[boosterIndex].pack = boosterPack;
+  console.log(freshPack);
+  //remove card from booster
+  if (!freshPack) {
+    const boosterPack = [...boosters[boosterIndex].pack];
+    const cardIndex = _.findIndex(boosterPack, { arena_id: card.arena_id });
+    boosterPack.splice(cardIndex, 1);
+    boosters[boosterIndex].pack = boosterPack;
+  }
 
   return boosters[boosterIndex];
 };
@@ -111,16 +111,16 @@ const getPacks = async (room) => {
       try {
         const players = getUsersInRoom(room).length;
 
-        for (let index = 0; index < players; index++) {
-          let roundPacks = [];
-
-          for (let i = 0; i < 3; i++) {
-            boosters.push({
-              round: i + 1,
-              room: room,
-              packId: index,
-              pack: generatePack(cardPool),
-            });
+        for (let roundIndex = 0; roundIndex < 3; roundIndex++) {
+          for (let index = 0; index < players; index++) {
+            for (let i = 0; i < 3; i++) {
+              boosters.push({
+                round: roundIndex + 1,
+                room: room,
+                packId: i,
+                pack: generatePack(cardPool),
+              });
+            }
           }
         }
 
@@ -148,9 +148,13 @@ function generatePack(cards) {
     return x.rarity === "rare" || x.rarity === "mythic";
   });
 
-  const uncommons = _.filter(cards, { rarity: "uncommon" });
+  const uncommons = _.filter(cards, (x) => {
+    return x.rarity === "uncommon" && !x.type_line.includes("Land");
+  });
 
-  const commons = _.filter(cards, { rarity: "common" });
+  const commons = _.filter(cards, (x) => {
+    return x.rarity === "common" && !x.type_line.includes("Land");
+  });
 
   const packRares = pullRandomCards(rares, 1);
   const packUncommons = pullRandomCards(uncommons, 3);

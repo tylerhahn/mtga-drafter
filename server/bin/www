@@ -14,6 +14,7 @@ const {
   getPacks,
   draftCard,
 } = require("../users");
+const { emit } = require("process");
 
 const io = require("socket.io")(server, {
   cors: {
@@ -22,13 +23,27 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("draftCard", async ({ id, card, packId, passToId, round }) => {
-    const passedBooster = await draftCard(id, card, packId, round);
-    console.log(round);
-    io.to(passToId).emit("receivePack", {
-      data: passedBooster,
-    });
-  });
+  socket.on(
+    "draftCard",
+    async ({ id, card, packId, passToId, round, freshPack }) => {
+      if (round < 4) {
+        const passedBooster = await draftCard(
+          id,
+          card,
+          packId,
+          round,
+          freshPack
+        );
+        io.to(passToId).emit("receivePack", {
+          data: passedBooster,
+        });
+      } else {
+        io.to(id).emit("drafterOver", {
+          finished: true,
+        });
+      }
+    }
+  );
 
   socket.on("startDraft", async (res) => {
     const roomId = res.roomId;

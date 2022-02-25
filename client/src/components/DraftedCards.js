@@ -8,9 +8,12 @@ const DraftedCards = () => {
 
   const renderDraftedCards = () => {
     if (selectedCards) {
-      return _.map(selectedCards, (card, i) => {
-        return <CardListItem key={i} card={card} />;
-      });
+      return _.map(
+        _.orderBy(selectedCards, ["color_identity"], ["asc"]),
+        (card, i) => {
+          return <CardListItem key={i} card={card} />;
+        }
+      );
     }
   };
   return (

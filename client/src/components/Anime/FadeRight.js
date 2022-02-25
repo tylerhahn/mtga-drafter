@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Anime from "react-anime";
 import { useInView } from "react-intersection-observer";
 
-const FadeRight = ({ children, duration, delay }) => {
+const FadeRight = ({ children, duration, delay, cName }) => {
   const { ref, inView } = useInView();
   const [autoplay, setAutoplay] = useState(false);
 
@@ -24,7 +24,9 @@ const FadeRight = ({ children, duration, delay }) => {
       delay={delay || 0}
       duration={duration}
     >
-      <div ref={ref}>{children}</div>
+      <div className={cName ? cName : ""} ref={ref}>
+        {children}
+      </div>
     </Anime>
   );
 };

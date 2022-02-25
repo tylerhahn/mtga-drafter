@@ -11,13 +11,13 @@ export const UserProvider = ({ children }) => {
   const [selectedCards, setSelectedCards] = useState([]);
   const [draftedCard, setDraftedCard] = useState();
 
-  console.log(selectedCards);
-
   const { socket } = useContext(SocketContext);
   const updateDraftedCards = (card) => {
     setSelectedCards([...selectedCards, draftedCard]);
     setDraftedCard(null);
   };
+
+  console.log(selectedCards);
 
   React.useEffect(() => {
     if (socket) {
