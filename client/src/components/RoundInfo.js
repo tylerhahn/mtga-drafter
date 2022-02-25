@@ -33,7 +33,7 @@ const RoundInfo = ({ packId }) => {
     var copyText = "Deck\n";
 
     Object.keys(cleanCardData).forEach((name) => {
-      copyText += cleanCardData[name] + " " + name + "\n";
+      copyText += cleanCardData[name] + " " + name.split("//")[0] + "\n";
     });
     setCopied(true);
     return copyText;
