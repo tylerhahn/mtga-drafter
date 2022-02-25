@@ -1,8 +1,14 @@
-const express = require("express");
-const app = express();
-const http = require("http");
-const server = http.createServer(app);
+var express = require("express"),
+  app = express(),
+  server = require("http").createServer(app);
+
+// const express = require("express");
+// const app = express();
+// const http = require("http");
+// const server = http.createServer(app);
+
 const { Server } = require("socket.io");
+
 const _ = require("lodash");
 
 const {
@@ -14,18 +20,13 @@ const {
   getPacks,
   draftCard,
 } = require("../users");
+
 const { emit } = require("process");
 
 const io = require("socket.io")(server, {
   cors: {
     origin: "*",
   },
-});
-
-emit.on("uncaughtException", function (exception) {
-  console.log(exception); // to see your exception details in the console
-  // if you are on production, maybe you can send the exception details to your
-  // email as well ?
 });
 
 io.on("connection", (socket) => {
@@ -150,6 +151,4 @@ io.on("connection", (socket) => {
 //   });
 // });
 
-server.listen(7111, () => {
-  console.log("listening on *:8000");
-});
+server.listen(process.env.PORT || 3000);
