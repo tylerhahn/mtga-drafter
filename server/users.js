@@ -51,16 +51,30 @@ const constructCardPool = (room) => {
   const usersInRoom = getUsersInRoom(room);
   if (usersInRoom.length <= 1) return usersInRoom[0].data.cards;
   _.map(usersInRoom, (user, index) => {
-    allCards.push(...user.data.cards);
+    for(var ci = 0; ci < user.data.cards.length ; ci++) {
+      var card = user.data.cards[ci];
+      for(var ici = 0; ici < card.amount; ici ++) {
+        var cardWithCount = {...card};
+        cardWithCount.grpid = cardWithCount.grpid + "%" + ici + "%";
+        allCards.push(card);
+      }
+    }
+    
     if (index === usersInRoom.length - 1) {
       findSharedCards = allCards.reduce((a, e) => {
-        a[e.grpid] = ++a[e.grpid] || 0;
+        a[e.grpid] = ++a[e.grpid] || 1;
         return a;
       }, {});
     }
   });
 
-  const sharedCollection = allCards.filter((e) => findSharedCards[e.grpid]);
+  const sharedCollection = [...(new Set(allCards.filter(
+    (e) => findSharedCards[e.grpid] === usersInRoom.length
+  )))].map((c) => {
+    c.grpid = c.grpid.replace(/(%\\d%)/, '');
+    return c;
+  });
+
   return sharedCollection;
 };
 
