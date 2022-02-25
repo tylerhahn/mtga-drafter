@@ -6,9 +6,8 @@ export const SocketContext = createContext();
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
-  // https://mtga-drafter-utdal.ondigitalocean.app/
   useEffect(() => {
-    const newSocket = io(`http://localhost:8080`);
+    const newSocket = io(`https://mtga-drafter-utdal.ondigitalocean.app/`);
     setSocket(newSocket);
     return () => newSocket.close();
   }, [setSocket]);
