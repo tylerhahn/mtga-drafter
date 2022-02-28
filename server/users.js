@@ -53,7 +53,7 @@ const constructCardPool = (room) => {
   _.map(usersInRoom, (user, index) => {
     for(var ci = 0; ci < user.data.cards.length ; ci++) {
       var card = user.data.cards[ci];
-      for(var ici = 0; ici < card.amount; ici ++) {
+      for(var ici = 0; ici < card.quanity; ici ++) {
         var cardWithCount = {...card};
         cardWithCount.grpid = cardWithCount.grpid + "%" + ici + "%";
         allCards.push(card);
