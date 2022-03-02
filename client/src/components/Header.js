@@ -173,7 +173,6 @@ const Header = () => {
               >
                 Start Draft
               </button>
-              <i className="pl-4 text-gray-100 fa-solid fa-gear"></i>
               <Modal title="Card Pool">
                 <div className="flex mb-4">
                   <button
