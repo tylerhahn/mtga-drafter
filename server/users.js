@@ -19,7 +19,9 @@ const addUser = (res) => {
 
   const existingUser = _.find(users, (x) => {
     console.log(x.data.player_name);
-    return x.room === room && x.data.player_name === userName;
+    console.log(userName);
+
+    return x.room === room && x.data.player_name.toLowerCase() === userName;
   });
 
   const determineHost = _.find(users, { host: true });
@@ -96,14 +98,21 @@ const getBooster = (user, pick, round, room) => {
   findBooster[0].user = user.id;
   return findBooster[0];
 };
-const getPacks = async (room) => {
+const getPacks = async (room, sets) => {
   let cardPool = [];
   try {
-    const rawCardPool = constructCardPool(room);
+    let rawCardPool = constructCardPool(room);
+    if (sets) {
+      console.log(rawCardPool[0]);
+      // rawCardPool = _.filter(rawCardPool, {});
+    }
     try {
       _.map(rawCardPool, (card, index) => {
         const scryfallCard = _.find(cardDb, { arena_id: card.grpid });
-        if (scryfallCard) {
+        if (index === 0) {
+          console.log(scryfallCard);
+        }
+        if (scryfallCard && sets.includes(scryfallCard.set)) {
           cardPool.push(scryfallCard);
         }
       });

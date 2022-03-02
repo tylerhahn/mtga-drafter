@@ -11,8 +11,6 @@ export const UserProvider = ({ children }) => {
   const [selectedCards, setSelectedCards] = useState([]);
   const [draftedCard, setDraftedCard] = useState();
 
-  console.log(selectedCards);
-
   const { socket } = useContext(SocketContext);
   const updateDraftedCards = (card) => {
     setSelectedCards([...selectedCards, draftedCard]);
@@ -27,9 +25,14 @@ export const UserProvider = ({ children }) => {
     }
   }, [socket]);
 
-  const saveCredentials = (userId, playerId) => {
+  const saveCredentials = (url) => {
+    const baseUrl = url.replace("https://mtga.untapped.gg/profile/", "");
+
+    const userId = baseUrl.split("/")[1];
+    const playerId = baseUrl.split("/")[0];
+
     if (userId && playerId) {
-      let crendentials = { userId: userId, playerId: playerId };
+      let crendentials = { playerId: userId, userId: playerId };
       localStorage.setItem("mtgadCredentials", JSON.stringify(crendentials));
       fetchLocalData();
     }

@@ -47,10 +47,11 @@ io.on("connection", (socket) => {
   );
 
   socket.on("startDraft", async (res) => {
-    const roomId = res.roomId;
+    const { roomId, activeSets } = res;
+    console.log(activeSets);
     const players = getUsersInRoom(roomId);
 
-    const packs = await getPacks(roomId);
+    const packs = await getPacks(roomId, activeSets);
 
     _.map(players, (player) => {
       const { id, pick, room, round } = player;
