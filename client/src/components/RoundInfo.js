@@ -59,16 +59,6 @@ const RoundInfo = ({ packId }) => {
         >
           {copied ? "Copied" : "Copy Deck to Arena"}
         </button>
-        {socketUser && socketUser.user.host && (
-          <button
-            onClick={() => {
-              socket.emit("destroyRoom", { room: roomId });
-            }}
-            className="rounded px-3 py-2 border-1  shadow-lg border-red-900 mr-3 text-white"
-          >
-            Destroy Room
-          </button>
-        )}
       </div>
     );
   };
@@ -76,6 +66,16 @@ const RoundInfo = ({ packId }) => {
     return (
       <div className="py-5">
         <div className="flex items-center">
+          {socketUser && socketUser.user.host && (
+            <button
+              onClick={() => {
+                socket.emit("destroyRoom", { room: roomId });
+              }}
+              className="rounded px-3 py-2 border-1  shadow-lg border-red-900 mr-3 text-white"
+            >
+              Destroy Room
+            </button>
+          )}
           <div className="px-3 text-gray-100 font-bold">Round #{round}</div>
           <div className="px-3 text-gray-100 font-bold">Pick #{pick}</div>
           <button
