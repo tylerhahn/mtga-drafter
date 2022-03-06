@@ -37,7 +37,6 @@ const RoundInfo = ({ packId }) => {
       copyText += cleanCardData[name] + " " + name.split("//")[0] + "\n";
     });
     setCopied(true);
-    socket.disconnect();
     return copyText;
   };
 

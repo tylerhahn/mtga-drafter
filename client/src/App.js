@@ -17,6 +17,7 @@ function App() {
             <GameProvider>
               <Routes>
                 <Route path="/room/:id" element={<DraftRoom />} />
+
                 <Route exact path="/" element={<Home />} />
               </Routes>
             </GameProvider>
