@@ -102,22 +102,17 @@ const getPacks = async (room, sets) => {
   let cardPool = [];
   try {
     let rawCardPool = constructCardPool(room);
-    if (sets) {
-      console.log(rawCardPool[0]);
-      // rawCardPool = _.filter(rawCardPool, {});
-    }
+
     try {
       _.map(rawCardPool, (card, index) => {
         const scryfallCard = _.find(cardDb, { arena_id: card.grpid });
-        if (index === 0) {
-          console.log(scryfallCard);
-        }
         if (scryfallCard && sets.includes(scryfallCard.set)) {
           cardPool.push(scryfallCard);
         }
       });
       try {
         const players = getUsersInRoom(room).length;
+        console.log("Total players = " + players);
         for (let roundIndex = 0; roundIndex < 3; roundIndex++) {
           for (let index = 0; index < players; index++) {
             for (let i = 0; i < 3; i++) {
@@ -160,6 +155,7 @@ function generatePack(cards) {
   const packUncommons = pullRandomCards(uncommons, 3);
   const packCommons = pullRandomCards(commons, 11);
   const pack = [...packRares, ...packUncommons, ...packCommons];
+  console.log("Pack length: " + pack.length);
   return pack;
 }
 module.exports = {

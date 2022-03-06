@@ -9,8 +9,8 @@ export const SocketProvider = ({ children }) => {
   const localUrl = "http://localhost:8080";
 
   useEffect(() => {
-    const newSocket = io(`https://mtga-drafter-utdal.ondigitalocean.app/`);
-    // const newSocket = io(localUrl);
+    // const newSocket = io(`https://mtga-drafter-utdal.ondigitalocean.app/`);
+    const newSocket = io(localUrl);
 
     setSocket(newSocket);
     return () => newSocket.close();

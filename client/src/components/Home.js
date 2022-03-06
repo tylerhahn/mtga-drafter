@@ -15,31 +15,25 @@ const Home = () => {
   const { user, loggedIn, saveCredentials } = useContext(UserContext);
   const { leaveRoom } = useContext(RoomContext);
 
-  React.useEffect(() => {
-    if (user) {
-      console.log(user);
-    }
-  }, [user]);
-
-  const handleRoomButton = (type) => {
-    if (type === "create") {
-      window.location.href = `/room/${createdRoom}`;
-    }
+  const handleRoomButton = () => {
+    window.location.href = `/room/${createdRoom}`;
   };
   return (
     <div className="h-screen bg-gray-900">
-      <div className="flex items-center h-full justify-center">
-        <div className="flex items-baseline w-2/5 flex-wrap">
-          <h1 className="text-white font-bold text-4xl m-auto w-full text-center">
-            MTGA Drafter
-          </h1>
+      <div className="flex items-center h-full justify-center m-auto">
+        <div className=" items-baseline w-2/5">
+          <div>
+            <h1 className="text-white font-bold text-4xl m-auto w-full text-center">
+              MTGA Drafter
+            </h1>
 
-          <div className="flex p-4 m-auto mb-4">
-            <img className="w-10 h-10 mr-5" src={G} alt="" />
-            <img className="w-10 h-10 mr-5" src={R} alt="" />
-            <img className="w-10 h-10 mr-5" src={U} alt="" />
-            <img className="w-10 h-10 mr-5" src={B} alt="" />
-            <img className="w-10 h-10 mr-5" src={W} alt="" />
+            <div className="flex p-4 m-auto justify-center">
+              <img className="w-10 h-10 mr-5" src={G} alt="" />
+              <img className="w-10 h-10 mr-5" src={R} alt="" />
+              <img className="w-10 h-10 mr-5" src={U} alt="" />
+              <img className="w-10 h-10 mr-5" src={B} alt="" />
+              <img className="w-10 h-10 mr-5" src={W} alt="" />
+            </div>
           </div>
           <CSSTransition
             in={!loggedIn}
@@ -49,7 +43,7 @@ const Home = () => {
           >
             <div>
               <div className="block mb-3 flex w-full">
-                <div className="w-4/5">
+                <div className="w-4/5 ">
                   <input
                     onChange={(e) => setUntappedUrl(e.target.value)}
                     value={credentials.playerId}
@@ -66,7 +60,7 @@ const Home = () => {
                 </button>
               </div>
 
-              <div className="block w-full">
+              <div className="block w-full ">
                 <a
                   target="_blank"
                   href="https://mtga.untapped.gg/profile/"
@@ -102,8 +96,8 @@ const Home = () => {
             timeout={1000}
             classNames="dialog"
           >
-            <div className="w-full max-w-2xl ">
-              <div className="mb-3 flex justify-center">
+            <div className="w-full ">
+              <div className="mb-3 flex justify-center m-auto">
                 <input
                   onChange={(e) => setCreatedRoom(e.target.value)}
                   value={createdRoom}

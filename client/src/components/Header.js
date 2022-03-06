@@ -30,7 +30,9 @@ const Header = () => {
       .get("https://api.scryfall.com/sets")
       .then((res) => {
         const arenaSets = _.filter(res.data.data, (x) => {
-          return x.arena_code && x.icon_svg_uri;
+          return (
+            x.arena_code && x.icon_svg_uri && currentSets.includes(x.arena_code)
+          );
         });
 
         setSets(arenaSets);
