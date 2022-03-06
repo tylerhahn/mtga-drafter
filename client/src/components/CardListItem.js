@@ -26,7 +26,7 @@ const CardListItem = ({ card }) => {
       style={{
         height: 35,
         backgroundSize: "cover",
-        backgroundImage: "url(" + returnCardUri(card) + ")",
+        backgroundImage: "url(" + returnCardUri(card, "front") + ")",
       }}
       className={`card-parent relative cursor-pointer  text-white w-full py-1 px-3 mb-2 rounded-full font-bold`}
     >

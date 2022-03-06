@@ -39,6 +39,14 @@ const RoundInfo = ({ packId }) => {
     return copyText;
   };
 
+  const renderCardInfo = (type) => {
+    const matches = _.filter(selectedCards, (x) => {
+      return x.type_line.includes(type);
+    });
+
+    return matches.length;
+  };
+
   const renderFinishedScreen = () => {
     return (
       <div>
@@ -65,6 +73,32 @@ const RoundInfo = ({ packId }) => {
           >
             {draftedCard ? "Confirm Pick" : "Select a card"}
           </button>
+          <div className="flex text-sm ml-5">
+            <div className="text-gray-100 mr-5 flex ">
+              <p className="text-uppercase font-bold pr-2">Creatures</p>{" "}
+              <span> {renderCardInfo("Creature")}</span>
+            </div>
+            <div className="text-gray-100 mr-5 flex">
+              <p className="text-uppercase font-bold pr-2">Instants</p>{" "}
+              <span> {renderCardInfo("Instant")}</span>
+            </div>
+            <div className="text-gray-100 mr-5 flex">
+              <p className="text-uppercase font-bold pr-2">Sorcerys</p>{" "}
+              <span> {renderCardInfo("Sorcery")}</span>
+            </div>
+            <div className="text-gray-100 mr-5 flex">
+              <p className="text-uppercase font-bold pr-2">Planeswalkers</p>{" "}
+              <span> {renderCardInfo("Planeswalker")}</span>
+            </div>
+            <div className="text-gray-100 mr-5 flex">
+              <p className="text-uppercase font-bold pr-2">Enchantments</p>{" "}
+              <span> {renderCardInfo("Enchantment")}</span>
+            </div>
+            <div className="text-gray-100 mr-5 flex">
+              <p className="text-uppercase font-bold pr-2">Artifacts</p>{" "}
+              <span> {renderCardInfo("Artifact")}</span>
+            </div>
+          </div>
         </div>
       </div>
     );

@@ -5,6 +5,7 @@ import { SocketContext } from "./Socket";
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+  const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = React.useState();
   const [socketUser, setSocketUser] = React.useState();
   const [meta, setMeta] = React.useState([]);
@@ -35,6 +36,7 @@ export const UserProvider = ({ children }) => {
       let crendentials = { playerId: userId, userId: playerId };
       localStorage.setItem("mtgadCredentials", JSON.stringify(crendentials));
       fetchLocalData();
+      setLoggedIn(true);
     }
   };
 
@@ -72,6 +74,11 @@ export const UserProvider = ({ children }) => {
     fetchLocalData();
   }, []);
 
+  React.useEffect(() => {
+    if (user) {
+      setLoggedIn(true);
+    }
+  }, [user]);
   return (
     <UserContext.Provider
       value={{
@@ -82,6 +89,7 @@ export const UserProvider = ({ children }) => {
         setDraftedCard,
         draftedCard,
         selectedCards,
+        loggedIn,
         updateDraftedCards,
         meta,
       }}

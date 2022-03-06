@@ -8,22 +8,18 @@ import Modal from "./Modal";
 import axios from "axios";
 import { currentSets } from "../currentSets";
 import "tw-elements";
+import Loader from "./Loader";
 const Header = () => {
   const [showLogin, setShowLogin] = useState(true);
-  const [credentials, setCredentials] = useState({});
   const { user, saveCredentials, socketUser } = useContext(UserContext);
   const { socket } = useContext(SocketContext);
-  const { room, setRoom } = useContext(RoomContext);
-  const [roomId, setRoomId] = useState();
-  const [untappedUrl, setUntappedUrl] = useState();
+  const { room, roomId, leaveRoom, loading } = useContext(RoomContext);
   const [sets, setSets] = useState();
   const [activeSets, setActiveSets] = useState();
+
   React.useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get("roomId");
     if (socket) {
       if (roomId && user) {
-        setRoomId(roomId);
         socket.emit("join", { user: user, roomId: roomId });
       }
     }
@@ -44,17 +40,13 @@ const Header = () => {
 
   React.useEffect(() => {
     if (user && user.user_id) {
-      setCredentials({ userId: user.user_id, playerId: user.player_id });
       setShowLogin(false);
     }
     getSet();
     setActiveSets(currentSets);
-    console.log(currentSets);
   }, [user]);
 
   const startDraft = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get("roomId");
     socket.emit("startDraft", { roomId: roomId, activeSets });
   };
 
@@ -72,11 +64,6 @@ const Header = () => {
         }
       });
     }
-  };
-
-  const leaveRoom = () => {
-    socket.disconnect();
-    setRoom();
   };
 
   const changeSets = (set) => {
@@ -123,6 +110,7 @@ const Header = () => {
       </div>
       <div>
         <div className="flex items-baseline">
+          {loading && <Loader />}
           {user && room && (
             <div className="flex">
               <button
@@ -134,37 +122,6 @@ const Header = () => {
             </div>
           )}
 
-          <button
-            onClick={() => setShowLogin(!showLogin)}
-            className="rounded px-3 py-2 border-b-4 border-l-2 shadow-lg bg-green-500 border-blue-900 text-white"
-          >
-            {user && user.player_name ? user.player_name : "Login"}
-          </button>
-
-          {showLogin && (
-            <div className="flex items-baseline">
-              <div className="block">
-                <input
-                  onChange={(e) => setUntappedUrl(e.target.value)}
-                  value={credentials.playerId}
-                  type="text"
-                  className="px-3 py-2 rounded placeholder-blue w-full p-0 no-outline text-gray-500 border-b-4 border-l-2 shadow-lg"
-                  placeholder="Player Id"
-                />
-
-                <p className="text-gray-200" style={{ fontSize: 10 }}>
-                  Url starts with: https://mtga.untapped.gg/profile/
-                </p>
-              </div>
-
-              <button
-                onClick={() => saveCredentials(untappedUrl)}
-                className="rounded px-3 py-2 border-b-4 border-l-2 shadow-lg bg-green-500 border-blue-900 text-white"
-              >
-                {user && user.name ? user.name : "Save"}
-              </button>
-            </div>
-          )}
           {socketUser && socketUser.user.host && !room.draftActive && (
             <>
               <button

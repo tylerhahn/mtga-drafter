@@ -6,22 +6,12 @@ const FadeLeft = ({ children, duration, delay }) => {
   const { ref, inView } = useInView();
   const [autoplay, setAutoplay] = useState(false);
 
-  useEffect(() => {
-    if (inView) {
-      setAutoplay(true);
-    }
-    if (!inView) {
-      setAutoplay(false);
-    }
-  }, [inView]);
-
   return (
     <Anime
       easing="easeOutQuint"
-      autoplay={autoplay}
-      translateX={[-300, 0]}
+      translateX={[-100, 0]}
       opacity={[0, 1]}
-      delay={delay || 0}
+      delay={0}
       duration={duration}
     >
       <div ref={ref}>{children}</div>

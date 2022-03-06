@@ -1,42 +1,151 @@
-import _ from "lodash";
-import React, { useState } from "react";
-import { GameContext } from "../context/Game";
+import React, { useContext, useState } from "react";
 import { UserContext } from "../context/User";
-import Card from "./Card";
-import FadeIn from "./Anime/FadeIn";
-import Header from "./Header";
-import RoundInfo from "./RoundInfo";
-import DraftedCards from "./DraftedCards";
+import G from "../assets/G.svg";
+import R from "../assets/R.svg";
+import U from "../assets/U.svg";
+import B from "../assets/B.svg";
+import W from "../assets/W.svg";
+import { CSSTransition } from "react-transition-group";
+import { RoomContext } from "../context/Room";
 
 const Home = () => {
-  const { user } = React.useContext(UserContext);
-  const { packs } = React.useContext(GameContext);
+  const [createdRoom, setCreatedRoom] = useState();
+  const [credentials, setCredentials] = useState({});
+  const [untappedUrl, setUntappedUrl] = useState();
+  const { user, loggedIn, saveCredentials } = useContext(UserContext);
+  const { leaveRoom } = useContext(RoomContext);
 
-  const renderCards = () => {
-    if (packs.length > 0) {
-      return _.map(packs[0].pack, (card, index) => {
-        return (
-          <FadeIn key={index} duration={500} delay={250}>
-            <Card card={card} />
-          </FadeIn>
-        );
-      });
+  React.useEffect(() => {
+    if (user) {
+      console.log(user);
+    }
+  }, [user]);
+
+  const handleRoomButton = (type) => {
+    if (type === "create") {
+      window.location.href = `/room/${createdRoom}`;
     }
   };
-
   return (
-    <div className="p-5 bg-gray-500 min-h-screen">
-      <Header />
-      <RoundInfo packId={packs.length > 0 ? packs[0].packId : false} />
-      <div className="flex items-start justify-between">
-        <div className="w-8/12 grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 grid gap-2 xl:gap-4 2xl:gap-8">
-          {renderCards()}
-        </div>
-        <div
-          style={{ maxWidth: 275 }}
-          className="rounded-lg w-3/12 p-2 min-h-screen bg-gray-400"
-        >
-          <DraftedCards />
+    <div className="h-screen bg-gray-900">
+      <div className="flex items-center h-full justify-center">
+        <div className="flex items-baseline w-2/5 flex-wrap">
+          <h1 className="text-white font-bold text-4xl m-auto w-full text-center">
+            MTGA Drafter
+          </h1>
+
+          <div className="flex p-4 m-auto mb-4">
+            <img className="w-10 h-10 mr-5" src={G} alt="" />
+            <img className="w-10 h-10 mr-5" src={R} alt="" />
+            <img className="w-10 h-10 mr-5" src={U} alt="" />
+            <img className="w-10 h-10 mr-5" src={B} alt="" />
+            <img className="w-10 h-10 mr-5" src={W} alt="" />
+          </div>
+          <CSSTransition
+            in={!loggedIn}
+            unmountOnExit
+            timeout={200}
+            classNames="dialog"
+          >
+            <div>
+              <div className="block mb-3 flex w-full">
+                <div className="w-4/5">
+                  <input
+                    onChange={(e) => setUntappedUrl(e.target.value)}
+                    value={credentials.playerId}
+                    type="text"
+                    className="px-3 py-2 rounded placeholder-blue w-full p-0 no-outline text-gray-500 border-b-4 border-l-2 shadow-lg"
+                    placeholder="Paste untapped.gg profile url here"
+                  />
+                </div>
+                <button
+                  onClick={() => saveCredentials(untappedUrl)}
+                  className="w-1/5 rounded px-3 py-2 border-b-4 border-l-2 shadow-lg bg-green-500 border-blue-900 text-white"
+                >
+                  {user && user.name ? user.name : "Login"}
+                </button>
+              </div>
+
+              <div className="block w-full">
+                <a
+                  target="_blank"
+                  href="https://mtga.untapped.gg/profile/"
+                  onClick={() => saveCredentials(untappedUrl)}
+                  className="rounded w-full px-3 py-2 border-b-4 border-l-2 shadow-lg bg-green-500 border-blue-900 text-white table text-center"
+                >
+                  Get Untapped Url
+                </a>
+                <ul className="text-gray-100 pt-5 m-auto">
+                  <li>
+                    <h3 className="font-bold text-lg pb-3">Steps</h3>
+                  </li>
+                  <li>
+                    1: Log into
+                    <a
+                      target="_blank"
+                      className="text-green-500 px-1"
+                      href="https://mtga.untapped.gg/profile"
+                    >
+                      https://mtga.untapped.gg/profile
+                    </a>
+                    and copy the url.
+                  </li>
+                  <li>2: Paste that url into the field above and hit Login.</li>
+                </ul>
+              </div>
+            </div>
+          </CSSTransition>
+
+          <CSSTransition
+            in={loggedIn}
+            unmountOnExit
+            timeout={1000}
+            classNames="dialog"
+          >
+            <div className="w-full max-w-2xl ">
+              <div className="mb-3 flex justify-center">
+                <input
+                  onChange={(e) => setCreatedRoom(e.target.value)}
+                  value={createdRoom}
+                  type="text"
+                  className="col-6 lg:col-5 px-3 py-2 rounded placeholder-blue p-0 no-outline text-gray-500 border-b-4 border-l-2 shadow-lg"
+                  placeholder="Enter Room Id"
+                />
+                <button
+                  onClick={() => handleRoomButton("create")}
+                  className="col-2 rounded  px-3 py-2 border-b-4 border-l-2 shadow-lg bg-green-500 border-blue-900 text-white"
+                >
+                  Create
+                </button>
+                <button
+                  onClick={() => handleRoomButton("join")}
+                  className="col-2 rounded px-3 py-2 border-b-4 border-l-2 shadow-lg bg-green-500 border-blue-900 text-white"
+                >
+                  Join
+                </button>
+              </div>
+            </div>
+          </CSSTransition>
+          <CSSTransition
+            in={loggedIn}
+            unmountOnExit
+            timeout={1000}
+            classNames="dialog"
+          >
+            <div className="flex items-center justify-center m-auto">
+              {user ? (
+                <h2 className=" text-gray-100 mr-4">{user.player_name}</h2>
+              ) : (
+                "null"
+              )}
+              <button
+                onClick={() => leaveRoom()}
+                className="border-b-2  shadow-lg border-b-red-900 mr-3 text-white"
+              >
+                Logout
+              </button>
+            </div>
+          </CSSTransition>
         </div>
       </div>
     </div>

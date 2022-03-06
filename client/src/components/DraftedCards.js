@@ -6,9 +6,13 @@ import CardListItem from "./CardListItem";
 const DraftedCards = () => {
   const { selectedCards } = useContext(UserContext);
 
+  console.log(selectedCards);
   const renderDraftedCards = () => {
     if (selectedCards) {
-      return _.map(selectedCards, (card, i) => {
+      const sortedCards = _.orderBy(selectedCards, [
+        (card) => card.color_identity.toString(),
+      ]);
+      return _.map(sortedCards, (card, i) => {
         return <CardListItem key={i} card={card} />;
       });
     }

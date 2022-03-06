@@ -7,6 +7,7 @@ export const returnCardUri = (card, side) => {
       return card.card_faces[1].image_uris.png;
     }
   } else if (card && card.image_uris) {
+    console.log("yo");
     return card.image_uris.png;
   } else {
     console.log(card);
