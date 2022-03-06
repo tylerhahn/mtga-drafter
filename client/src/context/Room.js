@@ -30,7 +30,7 @@ export const RoomProvider = ({ children }) => {
 
   const leaveRoom = () => {
     socket.disconnect();
-    setRoom();
+    window.location.href = "/";
   };
 
   return (

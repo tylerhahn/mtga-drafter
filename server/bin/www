@@ -13,6 +13,7 @@ const {
   getBooster,
   getPacks,
   draftCard,
+  destroyRoom,
 } = require("../users");
 
 const port = process.env.PORT || 8080;
@@ -26,14 +27,15 @@ const io = require("socket.io")(server, {
 io.on("connection", (socket) => {
   socket.on(
     "draftCard",
-    async ({ id, card, packId, passToId, round, freshPack }) => {
+    async ({ id, card, packId, passToId, round, freshPack, playerId }) => {
       if (round < 4) {
         const passedBooster = await draftCard(
           id,
           card,
           packId,
           round,
-          freshPack
+          freshPack,
+          playerId
         );
         io.to(passToId).emit("receivePack", {
           data: passedBooster,
@@ -48,13 +50,13 @@ io.on("connection", (socket) => {
 
   socket.on("startDraft", async (res) => {
     const { roomId, activeSets } = res;
-    console.log(activeSets);
     const players = getUsersInRoom(roomId);
 
     const packs = await getPacks(roomId, activeSets);
 
     _.map(players, (player) => {
       const { id, pick, room, round } = player;
+      console.log(player);
       io.to(id).emit("receivePack", {
         data: getBooster(player, pick, round, room),
       });
@@ -67,12 +69,11 @@ io.on("connection", (socket) => {
       room: roomId,
       users: getUsersInRoom(roomId),
     });
+  });
 
-    // console.log(packs);
-
-    // io.to(roomId).emit("getPacks", {
-    //   packs: packs,
-    // });
+  socket.on("destroyRoom", (res) => {
+    const roomId = res.room;
+    destroyRoom(roomId);
   });
 
   socket.on("join", (res) => {
@@ -87,6 +88,8 @@ io.on("connection", (socket) => {
       console.log(error);
       return;
     }
+
+    console.log(user.room);
 
     socket.join(user.room);
 

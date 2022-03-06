@@ -14,7 +14,7 @@ export const GameProvider = ({ children }) => {
   const { socket } = useContext(SocketContext);
   const { room, passDirection } = useContext(RoomContext);
   const [playerFinished, setPlayerFinished] = useState(false);
-  const { draftedCard, updateDraftedCards } = useContext(UserContext);
+  const { draftedCard, updateDraftedCards, user } = useContext(UserContext);
 
   React.useEffect(() => {
     if (socket) {
@@ -63,6 +63,7 @@ export const GameProvider = ({ children }) => {
             packId: packId,
             passToId: passToId,
             freshPack: true,
+            playerId: user.player_id,
           });
         }
       } else {
@@ -73,6 +74,7 @@ export const GameProvider = ({ children }) => {
           packId: packId,
           passToId: passToId,
           freshPack: false,
+          playerId: user.player_id,
         });
         setPick(pick + 1);
       }

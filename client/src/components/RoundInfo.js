@@ -6,8 +6,9 @@ import { UserContext } from "../context/User";
 import _ from "lodash";
 
 const RoundInfo = ({ packId }) => {
-  const { room, passDirection } = useContext(RoomContext);
+  const { room, passDirection, roomId } = useContext(RoomContext);
   const { socket } = useContext(SocketContext);
+  const { socketUser } = useContext(UserContext);
   const [copied, setCopied] = useState(false);
   const {
     removePack,
@@ -58,6 +59,16 @@ const RoundInfo = ({ packId }) => {
         >
           {copied ? "Copied" : "Copy Deck to Arena"}
         </button>
+        {socketUser && socketUser.user.host && (
+          <button
+            onClick={() => {
+              socket.emit("destroyRoom", { room: roomId });
+            }}
+            className="rounded px-3 py-2 border-1  shadow-lg border-red-900 mr-3 text-white"
+          >
+            Destroy Room
+          </button>
+        )}
       </div>
     );
   };

@@ -3,9 +3,10 @@ const axios = require("axios");
 const { cardDb } = require("./scryfall.js");
 const { result } = require("lodash");
 const e = require("express");
+
 //Array of users
-const users = [];
-const boosters = [];
+let users = [];
+let boosters = [];
 
 const addUser = (res) => {
   if (res && !res.userObj) return { error: "No user data found" };
@@ -18,9 +19,6 @@ const addUser = (res) => {
   // );
 
   const existingUser = _.find(users, (x) => {
-    console.log(x.data.player_name);
-    console.log(userName);
-
     return x.room === room && x.data.player_name.toLowerCase() === userName;
   });
 
@@ -37,8 +35,8 @@ const addUser = (res) => {
     room: res.roomId,
     data: res.userObj,
     draftedCards: [],
+    playerId: res.userObj.player_id,
   };
-
   users.push(user);
 
   return { user };
@@ -72,14 +70,20 @@ const constructCardPool = (room) => {
   return sharedCollection;
 };
 
-const draftCard = (id, card, packId, round, freshPack) => {
-  const roomUsers = [...users];
-  const draftUser = _.findIndex(users, { id: id });
+const destroyRoom = (room) => {
+  console.log("detroyed");
+  users = [];
+  boosters = [];
+};
+
+const draftCard = (id, card, packId, round, freshPack, playerId) => {
+  let roomUsers = [...users];
+
+  let draftUser = _.findIndex(users, { playerId: playerId });
   //add card to users' drafted cards
   const draftedCards = [...roomUsers[draftUser].draftedCards, card];
   roomUsers[draftUser].draftedCards = draftedCards;
   const boosterIndex = _.findIndex(boosters, { packId: packId, round: round });
-  console.log(freshPack);
   //remove card from booster
   if (!freshPack) {
     const boosterPack = [...boosters[boosterIndex].pack];
@@ -112,7 +116,6 @@ const getPacks = async (room, sets) => {
       });
       try {
         const players = getUsersInRoom(room).length;
-        console.log("Total players = " + players);
         for (let roundIndex = 0; roundIndex < 3; roundIndex++) {
           for (let index = 0; index < players; index++) {
             for (let i = 0; i < 3; i++) {
@@ -125,6 +128,7 @@ const getPacks = async (room, sets) => {
             }
           }
         }
+
         return boosters;
       } catch (err) {
         console.log(err);
@@ -155,7 +159,6 @@ function generatePack(cards) {
   const packUncommons = pullRandomCards(uncommons, 3);
   const packCommons = pullRandomCards(commons, 11);
   const pack = [...packRares, ...packUncommons, ...packCommons];
-  console.log("Pack length: " + pack.length);
   return pack;
 }
 module.exports = {
@@ -165,6 +168,7 @@ module.exports = {
   getUser,
   getUsersInRoom,
   constructCardPool,
+  destroyRoom,
   getPacks,
   draftCard,
 };
