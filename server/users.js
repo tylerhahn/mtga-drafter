@@ -52,11 +52,11 @@ const getUser = (id) => users.find((user) => user.id === id);
 const getUsersInRoom = (room) => users.filter((user) => user.room === room);
 
 const constructCardPool = (room) => {
+  let allCards;
   let findSharedCards;
   const usersInRoom = getUsersInRoom(room);
 
   if (usersInRoom.length <= 1) return usersInRoom[0].data.cards;
-
   _.map(usersInRoom, (user, index) => {
     for (var ci = 0; ci < user.data.cards.length; ci++) {
       var card = user.data.cards[ci];
@@ -137,9 +137,6 @@ const getPacks = async (room, sets) => {
         }
       });
       try {
-        const noSplits = _.filter(cardPool, (x) => {
-          return x.layout !== "split";
-        });
         const players = getUsersInRoom(room).length;
         for (let roundIndex = 0; roundIndex < 3; roundIndex++) {
           for (let index = 0; index < players; index++) {
@@ -148,7 +145,7 @@ const getPacks = async (room, sets) => {
                 round: roundIndex + 1,
                 room: room,
                 packId: i,
-                pack: generatePack(noSplits),
+                pack: generatePack(cardPool),
               });
             }
           }
