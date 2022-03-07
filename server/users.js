@@ -137,6 +137,9 @@ const getPacks = async (room, sets) => {
         }
       });
       try {
+        const noSplits = _.filter(cardPool, (x) => {
+          return x.layout !== "split";
+        });
         const players = getUsersInRoom(room).length;
         for (let roundIndex = 0; roundIndex < 3; roundIndex++) {
           for (let index = 0; index < players; index++) {
@@ -145,7 +148,7 @@ const getPacks = async (room, sets) => {
                 round: roundIndex + 1,
                 room: room,
                 packId: i,
-                pack: generatePack(cardPool),
+                pack: generatePack(noSplits),
               });
             }
           }
