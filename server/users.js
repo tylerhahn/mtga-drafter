@@ -56,13 +56,14 @@ const constructCardPool = (room) => {
   let findSharedCards;
   const usersInRoom = getUsersInRoom(room);
   if (usersInRoom.length <= 1) return usersInRoom[0].data.cards;
+
   _.map(usersInRoom, (user, index) => {
     for (var ci = 0; ci < user.data.cards.length; ci++) {
       var card = user.data.cards[ci];
-      for (var ici = 0; ici < card.amount; ici++) {
+      for (var ici = 0; ici < card.quantity; ici++) {
         var cardWithCount = { ...card };
         cardWithCount.grpid = cardWithCount.grpid + "%" + ici + "%";
-        allCards.push(card);
+        allCards.push(cardWithCount);
       }
     }
 
@@ -79,7 +80,7 @@ const constructCardPool = (room) => {
       allCards.filter((e) => findSharedCards[e.grpid] === usersInRoom.length)
     ),
   ].map((c) => {
-    c.grpid = c.grpid.replace(/(%\\d%)/, "");
+    c.grpid = c.grpid.split("%")[0];
     return c;
   });
 
@@ -113,8 +114,6 @@ const draftCard = (id, card, packId, round, freshPack, playerId) => {
 };
 
 const getBooster = (user, pick, round, room) => {
-  console.log(user);
-
   const findBooster = _.filter(boosters, (x) => {
     return (
       x.pack.length === pick && x.round === round && !x.user && x.room === room
@@ -133,7 +132,10 @@ const getPacks = async (room, sets) => {
 
     try {
       _.map(rawCardPool, (card, index) => {
-        const scryfallCard = _.find(cardDb, { arena_id: card.grpid });
+        const scryfallCard = _.find(cardDb, {
+          arena_id: parseFloat(card.grpid),
+        });
+
         if (scryfallCard && sets.includes(scryfallCard.set)) {
           cardPool.push(scryfallCard);
         }
@@ -152,8 +154,6 @@ const getPacks = async (room, sets) => {
             }
           }
         }
-
-        console.log(boosters);
         return boosters;
       } catch (err) {
         console.log(err);
