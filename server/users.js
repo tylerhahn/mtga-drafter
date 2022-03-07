@@ -113,11 +113,14 @@ const draftCard = (id, card, packId, round, freshPack, playerId) => {
 };
 
 const getBooster = (user, pick, round, room) => {
+  console.log(user);
+
   const findBooster = _.filter(boosters, (x) => {
     return (
       x.pack.length === pick && x.round === round && !x.user && x.room === room
     );
   });
+
   findBooster[0].user = user.id;
   return findBooster[0];
 };
