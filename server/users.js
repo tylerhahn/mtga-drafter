@@ -153,6 +153,7 @@ const getPacks = async (room, sets) => {
           }
         }
 
+        console.log(boosters);
         return boosters;
       } catch (err) {
         console.log(err);
