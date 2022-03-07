@@ -52,10 +52,9 @@ const getUser = (id) => users.find((user) => user.id === id);
 const getUsersInRoom = (room) => users.filter((user) => user.room === room);
 
 const constructCardPool = (room) => {
-  let allCards;
+  let allCards = [];
   let findSharedCards;
   const usersInRoom = getUsersInRoom(room);
-
   if (usersInRoom.length <= 1) return usersInRoom[0].data.cards;
   _.map(usersInRoom, (user, index) => {
     for (var ci = 0; ci < user.data.cards.length; ci++) {
