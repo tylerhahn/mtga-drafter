@@ -52,21 +52,38 @@ const getUser = (id) => users.find((user) => user.id === id);
 const getUsersInRoom = (room) => users.filter((user) => user.room === room);
 
 const constructCardPool = (room) => {
-  let allCards = [];
   let findSharedCards;
   const usersInRoom = getUsersInRoom(room);
+
   if (usersInRoom.length <= 1) return usersInRoom[0].data.cards;
+
   _.map(usersInRoom, (user, index) => {
-    allCards.push(...user.data.cards);
+    for (var ci = 0; ci < user.data.cards.length; ci++) {
+      var card = user.data.cards[ci];
+      for (var ici = 0; ici < card.amount; ici++) {
+        var cardWithCount = { ...card };
+        cardWithCount.grpid = cardWithCount.grpid + "%" + ici + "%";
+        allCards.push(card);
+      }
+    }
+
     if (index === usersInRoom.length - 1) {
       findSharedCards = allCards.reduce((a, e) => {
-        a[e.grpid] = ++a[e.grpid] || 0;
+        a[e.grpid] = ++a[e.grpid] || 1;
         return a;
       }, {});
     }
   });
 
-  const sharedCollection = allCards.filter((e) => findSharedCards[e.grpid]);
+  const sharedCollection = [
+    ...new Set(
+      allCards.filter((e) => findSharedCards[e.grpid] === usersInRoom.length)
+    ),
+  ].map((c) => {
+    c.grpid = c.grpid.replace(/(%\\d%)/, "");
+    return c;
+  });
+
   return sharedCollection;
 };
 
@@ -80,10 +97,12 @@ const draftCard = (id, card, packId, round, freshPack, playerId) => {
   let roomUsers = [...users];
 
   let draftUser = _.findIndex(users, { playerId: playerId });
+
   //add card to users' drafted cards
   const draftedCards = [...roomUsers[draftUser].draftedCards, card];
   roomUsers[draftUser].draftedCards = draftedCards;
   const boosterIndex = _.findIndex(boosters, { packId: packId, round: round });
+
   //remove card from booster
   if (!freshPack) {
     const boosterPack = [...boosters[boosterIndex].pack];
@@ -93,6 +112,7 @@ const draftCard = (id, card, packId, round, freshPack, playerId) => {
   }
   return boosters[boosterIndex];
 };
+
 const getBooster = (user, pick, round, room) => {
   const findBooster = _.filter(boosters, (x) => {
     return (
@@ -102,8 +122,10 @@ const getBooster = (user, pick, round, room) => {
   findBooster[0].user = user.id;
   return findBooster[0];
 };
+
 const getPacks = async (room, sets) => {
   let cardPool = [];
+
   try {
     let rawCardPool = constructCardPool(room);
 
